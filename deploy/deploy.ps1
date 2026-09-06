@@ -1,4 +1,4 @@
-# Deploy fixsim-mcp to Azure App Service on the existing FIXSIMSandbox plan (no new plan, no extra cost).
+﻿# Deploy fixsim-mcp to Azure App Service on the existing FIXSIMSandbox plan (no new plan, no extra cost).
 # Run from the repo root with an az-logged-in shell:  .\deploy\deploy.ps1
 # Idempotent: creates the web app on first run, redeploys on later runs.
 param(
@@ -8,10 +8,10 @@ param(
   [string]$SandboxCallerKey = ""               # optional: must match Sandbox:CallerKey on fixsim-sandbox
 )
 $ErrorActionPreference = "Stop"
-$plan = az webapp show -n $PlanApp -g $ResourceGroup --query appServicePlanId -o tsv
+$plan = az webapp show -n $PlanApp -g $ResourceGroup --query serverFarmId -o tsv
 if (-not $plan) { throw "Could not read the App Service plan of $PlanApp" }
 
-$exists = az webapp show -n $App -g $ResourceGroup --query name -o tsv 2>$null
+$exists = az webapp list -g $ResourceGroup --query "[?name=='$App'].name" -o tsv
 if (-not $exists) {
   Write-Host "Creating $App on plan $plan"
   az webapp create -n $App -g $ResourceGroup --plan $plan --runtime "dotnet:8" | Out-Null
