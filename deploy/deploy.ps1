@@ -7,7 +7,9 @@ param(
   [string]$PlanApp = "fixsim-sandbox",        # borrow this app's App Service plan
   [string]$SandboxCallerKey = ""               # optional: must match Sandbox:CallerKey on fixsim-sandbox
 )
-$ErrorActionPreference = "Stop"
+# az writes progress to stderr; under "Stop" PowerShell would turn that into a terminating error.
+$ErrorActionPreference = "Continue"
+function Check($what) { if ($LASTEXITCODE -ne 0) { throw "$what failed (exit $LASTEXITCODE)" } }
 $plan = az webapp show -n $PlanApp -g $ResourceGroup --query serverFarmId -o tsv
 if (-not $plan) { throw "Could not read the App Service plan of $PlanApp" }
 
@@ -31,10 +33,12 @@ az webapp config appsettings set -n $App -g $ResourceGroup --settings $settings 
 $pub = Join-Path $PSScriptRoot "..\publish"
 if (Test-Path $pub) { Remove-Item -Recurse -Force $pub }
 dotnet publish (Join-Path $PSScriptRoot "..\src\FixSim.Mcp\FixSim.Mcp.csproj") -c Release -o $pub
+Check "dotnet publish"
 $zip = Join-Path $PSScriptRoot "..\publish.zip"
 if (Test-Path $zip) { Remove-Item -Force $zip }
 Compress-Archive -Path (Join-Path $pub "*") -DestinationPath $zip
-az webapp deploy -n $App -g $ResourceGroup --src-path $zip --type zip | Out-Null
+az webapp deploy -n $App -g $ResourceGroup --src-path $zip --type zip --only-show-errors | Out-Null
+Check "az webapp deploy"
 $host_ = az webapp show -n $App -g $ResourceGroup --query defaultHostName -o tsv
 Write-Host "Deployed: https://$host_/  (MCP endpoint: https://$host_/mcp)"
 Write-Host "Custom domain (once): CNAME mcp.fixsim.com -> $host_ ; then"
