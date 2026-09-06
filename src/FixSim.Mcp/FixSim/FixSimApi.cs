@@ -99,6 +99,26 @@ public sealed class FixSimApi
         catch (JsonException) { return new JsonObject { ["ok"] = true, ["raw"] = text }; }
     }
 
+    /// <summary>
+    /// The portal returns up to 1000 rows per list call, newest first, each with raw FIX. Cap what goes back to the
+    /// model and say how many were left out.
+    /// </summary>
+    public static JsonNode? Limit(JsonNode? node, int limit, int max = 200)
+    {
+        if (node is not JsonArray arr) return node;
+        limit = Math.Clamp(limit, 1, max);
+        if (arr.Count <= limit) return node;
+        var kept = new JsonArray();
+        for (int i = 0; i < limit; i++) kept.Add(arr[i]?.DeepClone());
+        return new JsonObject
+        {
+            ["returned"] = limit,
+            ["available"] = arr.Count,
+            ["note"] = $"Showing the newest {limit} of {arr.Count}. Narrow with clOrdId/orderStatus or raise limit (max {max}).",
+            ["items"] = kept
+        };
+    }
+
     private static string Trim(string body) => string.IsNullOrWhiteSpace(body) ? "" : " Response: " + (body.Length > 600 ? body[..600] + "…" : body);
 }
 
