@@ -37,4 +37,7 @@ Compress-Archive -Path (Join-Path $pub "*") -DestinationPath $zip
 az webapp deploy -n $App -g $ResourceGroup --src-path $zip --type zip | Out-Null
 $host_ = az webapp show -n $App -g $ResourceGroup --query defaultHostName -o tsv
 Write-Host "Deployed: https://$host_/  (MCP endpoint: https://$host_/mcp)"
-Write-Host "Next: CNAME mcp.fixsim.com -> $host_ , then: az webapp config hostname add -n $App -g $ResourceGroup --hostname mcp.fixsim.com ; az webapp config ssl create ..."
+Write-Host "Custom domain (once): CNAME mcp.fixsim.com -> $host_ ; then"
+Write-Host "  az webapp config hostname add --webapp-name $App -g $ResourceGroup --hostname mcp.fixsim.com"
+Write-Host "  az webapp config ssl create -n $App -g $ResourceGroup --hostname mcp.fixsim.com"
+Write-Host "  az webapp config ssl bind -n $App -g $ResourceGroup --certificate-thumbprint <from: az webapp config ssl show -g $ResourceGroup --certificate-name mcp.fixsim.com> --ssl-type SNI"
