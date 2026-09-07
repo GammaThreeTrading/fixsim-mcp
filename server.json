@@ -1,0 +1,26 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.gdrumma/fixsim",
+  "title": "FIXSIM",
+  "description": "Test FIX from Claude, ChatGPT, or Cursor: create free FIX test sessions on the FIXSIM Developer Sandbox, read the wire, fill or reject orders; FIXSIM customers drive their own instances with an API key.",
+  "version": "0.1.1",
+  "websiteUrl": "https://www.fixsim.com/sandbox",
+  "repository": {
+    "url": "https://github.com/gdrumma/fixsim-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.fixsim.com/mcp",
+      "headers": [
+        {
+          "name": "x-api-key",
+          "description": "Optional. Your FIXSIM API key (portal.fixsim.com, API Keys). Leave blank to use only the free sandbox tools.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

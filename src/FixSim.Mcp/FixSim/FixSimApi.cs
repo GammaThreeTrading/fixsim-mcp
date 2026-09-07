@@ -47,9 +47,8 @@ public sealed class FixSimApi
     }
 
     /// <summary>
-    /// Defence in depth: the portal's per-endpoint instance gate checks that an instance exists, not that it belongs
-    /// to the caller's key. Before any instance-scoped call, confirm the instance is one /v1/Instances lists for this
-    /// key. Cached briefly per key.
+    /// Before any instance-scoped call, confirm the instance is one that /v1/Instances lists for this key, so a
+    /// mistyped or hallucinated instance name gets a helpful answer here instead of a round trip. Cached briefly per key.
     /// </summary>
     private async Task EnsureInstanceAllowedAsync(string key, string path, CancellationToken ct)
     {
