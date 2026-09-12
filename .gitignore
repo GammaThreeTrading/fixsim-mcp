@@ -482,3 +482,7 @@ $RECYCLE.BIN/
 *.swp
 publish/
 publish.zip
+
+# local registry publisher binary (downloaded per machine, never committed)
+mcp-publisher.exe
+mcp-publisher.tar.gz
