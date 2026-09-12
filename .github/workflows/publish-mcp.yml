@@ -1,0 +1,40 @@
+# Publishes server.json to the official MCP Registry (registry.modelcontextprotocol.io).
+#
+# Auth is GitHub OIDC: the workflow proves it runs inside GammaThreeTrading/fixsim-mcp, and the
+# registry grants io.github.GammaThreeTrading/* from the repository_owner claim. This is the
+# registry's recommended path and the only one that currently works for organization namespaces
+# (the interactive `mcp-publisher login github` device flow returns 403 for org namespaces:
+# modelcontextprotocol/registry issues #1537 / #1468).
+#
+# Run it by hand from the Actions tab (workflow_dispatch) or push a version tag (v0.1.2 ...).
+# The server is remote (https://mcp.fixsim.com/mcp), so there is no package to publish first.
+name: Publish to MCP Registry
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # OIDC token for the registry
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher --version
+
+      - name: Validate server.json
+        run: ./mcp-publisher validate server.json
+
+      - name: Authenticate to MCP Registry (GitHub OIDC)
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish server to MCP Registry
+        run: ./mcp-publisher publish
