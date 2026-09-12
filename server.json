@@ -1,12 +1,12 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.gdrumma/fixsim",
+  "name": "io.github.GammaThreeTrading/fixsim",
   "title": "FIXSIM",
   "description": "Test FIX from Claude, ChatGPT, or Cursor: create free FIX test sessions on the FIXSIM Developer Sandbox, read the wire, fill or reject orders; FIXSIM customers drive their own instances with an API key.",
   "version": "0.1.1",
   "websiteUrl": "https://www.fixsim.com/sandbox",
   "repository": {
-    "url": "https://github.com/gdrumma/fixsim-mcp",
+    "url": "https://github.com/GammaThreeTrading/fixsim-mcp",
     "source": "github"
   },
   "remotes": [
