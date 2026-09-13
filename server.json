@@ -3,7 +3,7 @@
   "name": "io.github.GammaThreeTrading/fixsim",
   "title": "FIXSIM",
   "description": "Test FIX from Claude, ChatGPT, or Cursor: free sandbox FIX sessions or your own FIXSIM instances.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "websiteUrl": "https://www.fixsim.com/sandbox",
   "repository": {
     "url": "https://github.com/GammaThreeTrading/fixsim-mcp",

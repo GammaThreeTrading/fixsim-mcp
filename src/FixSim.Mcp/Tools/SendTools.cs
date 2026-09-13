@@ -22,7 +22,7 @@ public sealed class SendTools
         return _key.Resolve(apiKey);
     }
 
-    [McpServerTool(Name = "fixsim_act_on_orders", Destructive = false),
+    [McpServerTool(Name = "fixsim_act_on_orders", Title = "Act on inbound orders", Destructive = false),
      Description("Respond to orders the user's system sent into FIXSIM: acknowledge, fully or partially execute, reject, cancel remaining, expire, done-for-day, restate, or accept/reject a pending cancel/replace. FIXSIM emits the matching execution reports on the FIX session. Give one or more ClOrdIDs; for executions supply lastPx and, for a partial, lastQty.")]
     public Task<JsonNode?> ActOnOrders(string instance, string session,
         [Description("One of: Ack, FullyExecute, PartialExecute, CancelRemaining, DoneForDay, AckCancelOrdReplaceReq, AcceptCancelOrdReplaceReq, RejectCancelOrdReplaceReq, Reject, Delete, Restate, Expire")] string action,
@@ -34,7 +34,7 @@ public sealed class SendTools
         => _api.PostAsync(Key(apiKey), $"v1/OrdersInAction/{U(instance)}/{U(session)}",
             new { action, lastPx, lastQty, clOrdIds }, ct);
 
-    [McpServerTool(Name = "fixsim_send_order", Destructive = false),
+    [McpServerTool(Name = "fixsim_send_order", Title = "Send a New Order Single", Destructive = false),
      Description("Have FIXSIM send a New Order Single (35=D) OUT on a session to the user's system, so they can test how their system handles inbound orders. Follow up with fixsim_list_orders_out and fixsim_list_executions_in to see what came back.")]
     public Task<JsonNode?> SendOrder(string instance, string session,
         [Description("ClOrdID (tag 11) to assign; must be unique on the session")] string clOrdId,
@@ -49,7 +49,7 @@ public sealed class SendTools
         => _api.PostAsync(Key(apiKey), $"v1/OrdersOut/{U(instance)}/{U(session)}/{U(clOrdId)}",
             new { symbol, side, orderQty, ordType, price, additionalTags }, ct);
 
-    [McpServerTool(Name = "fixsim_cancel_order_out", Destructive = false),
+    [McpServerTool(Name = "fixsim_cancel_order_out", Title = "Send an Order Cancel Request", Destructive = false),
      Description("Have FIXSIM send an Order Cancel Request (35=F) for an order it previously sent out with fixsim_send_order.")]
     public Task<JsonNode?> CancelOrderOut(string instance, string session,
         [Description("ClOrdID of the order to cancel (becomes OrigClOrdID, tag 41)")] string clOrdId,
@@ -59,7 +59,7 @@ public sealed class SendTools
         => _api.PostAsync(Key(apiKey), $"v1/OrdersOutCancel/{U(instance)}/{U(session)}/{U(clOrdId)}",
             new { newClOrdId, additionalTags }, ct);
 
-    [McpServerTool(Name = "fixsim_send_raw_fix", Destructive = false),
+    [McpServerTool(Name = "fixsim_send_raw_fix", Title = "Send raw FIX messages", Destructive = false),
      Description("Send one or more raw FIX application messages OUT on a session as given (tag=value pairs separated by | or SOH). FIXSIM supplies the session header fields (BeginString, CompIDs, MsgSeqNum, SendingTime) and the checksum. Use for message types the other tools do not cover.")]
     public Task<JsonNode?> SendRawFix(string instance, string session,
         [Description("Raw FIX messages, e.g. 35=D|11=ORD1|55=IBM|54=1|38=100|40=2|44=150.25|59=0")] string[] fixMessages,
